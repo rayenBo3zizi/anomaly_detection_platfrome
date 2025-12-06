@@ -9,7 +9,13 @@ djangorestframework = "*"
 pillow = "*"
 psycopg2 = "*"
 djangorestframework-simplejwt = "*"
+numpy = "*"
+faker = "*"
+pandas = "*"
+matplotlib = "*"
+pipfile = "*"
 python-decouple = "*"
+requests = "*"
 
 [dev-packages]
 
