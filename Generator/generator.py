@@ -5,7 +5,7 @@ import os
 import random
 
 from decouple import Config, RepositoryEnv
-from genClaude import CleanSensorSimulator
+from Generator.simulator import CleanSensorSimulator
 from HttpGenerator import HTTPEnabledSensorSimulator  
 
 
