@@ -2,6 +2,7 @@ from django.db import models
 from .enumerations import *
 from django.contrib.auth.models import User
 
+
 class FarmProfile(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     location = models.CharField(max_length=300)
@@ -104,13 +105,5 @@ class UserProfile(models.Model):
 
 
 
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 
-@api_view(['GET'])
-def whoami(request):
-    return Response({
-        "id": request.user.id,
-        "username": request.user.username,
-        "authenticated": request.user.is_authenticated
-    })
+

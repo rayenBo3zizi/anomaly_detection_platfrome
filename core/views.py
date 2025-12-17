@@ -5,6 +5,7 @@ from .permissions import IsOwnerOrAdmin
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.utils import timezone
 
 class FarmProfileViewSet(viewsets.ModelViewSet):
     queryset = FarmProfile.objects.all()
@@ -41,7 +42,8 @@ class SensorReadingViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='plot/(?P<plot_id>[^/.]+)')
     def by_plot(self, request, plot_id=None):
         """GET /api/sensor-readings/plot/<plot_id>/"""
-        readings = SensorReading.objects.filter(plot_id=plot_id)
+        today = timezone.localdate() 
+        readings = SensorReading.objects.filter(plot_id=plot_id, timestamp__date=today).order_by('timestamp')
         serializer = self.get_serializer(readings, many=True)
         return Response(serializer.data)
 

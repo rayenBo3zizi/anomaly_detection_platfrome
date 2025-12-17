@@ -1,5 +1,4 @@
 import time
-import threading
 import random
 from datetime import datetime, timedelta
 import numpy as np
@@ -25,12 +24,11 @@ class CleanSensorSimulator:
             random.seed(seed)
             np.random.seed(seed)
 
-        # Initial values (random but normal)
+
         self.current_temperature = random.uniform(20, 26)
         self.current_humidity = random.uniform(55, 70)
         self.current_soil_moisture = random.uniform(55, 70)
 
-        # Normal bases
         self.base_temperature = 23.0
         self.base_humidity = 60.0
         self.base_soil_moisture = 65.0
@@ -39,13 +37,13 @@ class CleanSensorSimulator:
         self.drift_temp = 0.0
         self.drift_hum = 0.0
         self.drift_soil = 0.0
-        self.drift_rate = 0.005  # Plus lent
+        self.drift_rate = 0.005  
 
         # Irrigation
         self.last_irrigation = self.current_time - timedelta(hours=12)
         self.irrigation_interval = random.uniform(12, 24) * 3600
 
-        # Durées CORRIGÉES (en secondes)
+        
         self.normal_duration = 15 * 60        # 15 minutes en mode normal
         self.anomaly_duration = 10 * 60       # 10 minutes d'anomalie
         self.recovery_duration = 5 * 60       # 5 minutes de récupération
@@ -101,12 +99,6 @@ class CleanSensorSimulator:
             print(f"\n*** IRRIGATION simulée: +{increase:.2f}% sol ***\n")
 
     def get_diurnal_targets(self):
-        """
-        CORRECTION MAJEURE: Cycle diurnal réaliste
-        - Température: min vers 6h, max vers 14h-15h
-        - Humidité: corrélation NÉGATIVE avec température
-        - Sol: décroissance lente pendant la journée
-        """
         hour = self.current_time.hour + self.current_time.minute / 60.0
         
         # TEMPÉRATURE: cycle sinusoïdal avec pic à 15h (heure 15)
@@ -143,7 +135,7 @@ class CleanSensorSimulator:
         now = self.current_time
         elapsed = (now - self.mode_start).total_seconds()
 
-        # Scripted anomaly (dominant if defined)
+        
         if self.scenario_index < len(self.scenario):
             start_time, anomaly_type, duration = self.scenario[self.scenario_index]
             if now >= start_time and self.mode == "normal":
@@ -154,7 +146,7 @@ class CleanSensorSimulator:
                 print(f"\n*** ANOMALIE SCRIPTÉE déclenchée: {self.mode} ***\n")
                 return
 
-        # Random anomaly if normal for a while
+        
         if self.mode == "normal" and elapsed >= self.normal_duration:
             self.mode = random.choice(self.anomaly_list)
             self.mode_start = now
@@ -186,7 +178,7 @@ class CleanSensorSimulator:
                 target_hum = self.current_humidity + (self.recovery_targets[1] - self.current_humidity) * progress
                 target_soil = self.current_soil_moisture + (self.recovery_targets[2] - self.current_soil_moisture) * progress
 
-            # Convergence douce vers les cibles avec bruit
+            
             self.current_temperature += 0.15 * (target_temp - self.current_temperature) + random.uniform(-0.3, 0.3) + self.drift_temp
             self.current_humidity += 0.15 * (target_hum - self.current_humidity) + random.uniform(-0.8, 0.8) + self.drift_hum
             self.current_soil_moisture += 0.1 * (target_soil - self.current_soil_moisture) + random.uniform(-0.15, 0.15) + self.drift_soil

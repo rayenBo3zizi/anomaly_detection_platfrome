@@ -5,23 +5,12 @@ import os
 import random
 
 from decouple import Config, RepositoryEnv
-from Generator.simulator import CleanSensorSimulator
+from simulator import CleanSensorSimulator
 from HttpGenerator import HTTPEnabledSensorSimulator  
 
 
 def run_simulation_for_plot(plot_id, http_sim, seed_offset=0, interval=300):
-    """
-    Thread : simulation pour un seul plot.
-    Mode production : envoi toutes les 5 minutes (300s)
-    
-    Args:
-        plot_id: ID du plot
-        http_sim: Instance HTTP pour envoi (None = affichage seulement)
-        seed_offset: Décalage pour la seed (crée de la variabilité)
-        interval: Intervalle entre lectures en secondes (300 = 5min)
-    """
-    
-    # Scénario : anomalie dans 30-90 minutes (adapté pour intervalle 5min)
+
     start_anomaly = datetime.now() + timedelta(minutes=random.uniform(30, 90))
     anomalies = [
         "temp_spike",
@@ -32,11 +21,11 @@ def run_simulation_for_plot(plot_id, http_sim, seed_offset=0, interval=300):
         "moisture_leak"
     ]
     random_anomaly = random.choice(anomalies)
-    scenario = [(start_anomaly, random_anomaly, 3600)]  # 1h d'anomalie
+    scenario = [(start_anomaly, random_anomaly, 3600)]  
     
     print(f"\n🌱 Plot {plot_id} : Anomalie '{random_anomaly}' prévue vers {start_anomaly.strftime('%H:%M:%S')}\n")
     
-    # Créer le simulateur avec durées ajustées pour intervalle 5min
+
     sim = CleanSensorSimulator(
         plot_id=plot_id,
         scenario=scenario,
@@ -46,7 +35,7 @@ def run_simulation_for_plot(plot_id, http_sim, seed_offset=0, interval=300):
         seed=(plot_id * 42 + seed_offset) if seed_offset else None
     )
     
-    # AJUSTEMENT DES DURÉES pour intervalle 5min (12 lectures/heure)
+
     # Mode normal : 2-3 heures (24-36 lectures)
     sim.normal_duration = random.uniform(2 * 3600, 3 * 3600)
     # Anomalie : 1-2 heures (12-24 lectures)
@@ -85,7 +74,7 @@ def run_simulation_for_plot(plot_id, http_sim, seed_offset=0, interval=300):
                     if iteration % 6 == 0:  # Log erreur toutes les 30min
                         print(f"⚠️  Erreur envoi HTTP plot {plot_id}: {e}")
             
-            # Stocker pour plotting (optionnel)
+            
             sim.timestamps.append(sim.current_time)
             sim.temps.append(r["temperature"])
             sim.humids.append(r["humidity"])
@@ -104,6 +93,7 @@ def run_simulation_for_plot(plot_id, http_sim, seed_offset=0, interval=300):
             time.sleep(60)  # Attendre 1min avant de réessayer
 
 
+'''
 def test_single_plot_fast():
     """Test rapide : 1 plot avec intervalle 2s (pour debug)"""
     print("\n🧪 TEST RAPIDE: Simulation 1 plot (intervalle 2s)\n")
@@ -113,7 +103,7 @@ def test_single_plot_fast():
         "temp_spike", "temp_low", "humidity_spike",
         "humidity_drop", "moisture_drop", "moisture_leak"
     ])
-    scenario = [(start_anomaly, random_anomaly, 120)]  # 2min d'anomalie
+    scenario = [(start_anomaly, random_anomaly, 120)] 
     
     print(f"*** ANOMALIE : {random_anomaly} dans 2 minutes ***\n")
     
@@ -125,71 +115,13 @@ def test_single_plot_fast():
         cross_effects=False,
     )
     
-    # Durées courtes pour test rapide
-    sim.normal_duration = 5 * 60  # 5min
-    sim.anomaly_duration = 2 * 60  # 2min
-    sim.recovery_duration = 2 * 60  # 2min
+
+    sim.normal_duration = 5 * 60  
+    sim.anomaly_duration = 2 * 60  
+    sim.recovery_duration = 2 * 60  
     
     sim.run(minutes=15, interval=2)
-
-
-def test_multi_plots_display_only():
-    """Test : Tous les plots de la BD - AFFICHAGE SEULEMENT (intervalle 2s)"""
-    print("\n🧪 TEST: Simulation multi-plots - MODE AFFICHAGE RAPIDE\n")
-    print("=" * 60)
-    
-    # Récupérer les plots depuis la BD
-    plots = []
-    try:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        project_dir = os.path.dirname(script_dir)
-        env_path = os.path.join(project_dir, "Anomaly_Detection_Platform", ".env")
-        config = Config(RepositoryEnv(env_path))
-        
-        BASE_URL = "http://localhost:8000"
-        USERNAME = config("ADMIN_NAME")
-        PASSWORD = config("ADMIN_PASSWORD")
-        
-        token = HTTPEnabledSensorSimulator.get_jwt_token(USERNAME, PASSWORD)
-        http_sim = HTTPEnabledSensorSimulator(BASE_URL, token=token)
-        plots = http_sim.fetch_plots()
-        
-        print(f"✅ Connecté à Django : {len(plots)} plots récupérés depuis la BD")
-        
-    except Exception as e:
-        print(f"⚠️  Erreur connexion Django: {e}")
-        print("⚠️  Utilisation de 3 plots de test par défaut")
-        plots = [{"id": 1}, {"id": 2}, {"id": 3}]
-    
-    if not plots:
-        print("❌ Aucun plot disponible")
-        return
-    
-    print(f"\n🚀 Lancement de {len(plots)} simulateurs (intervalle 2s pour test)...\n")
-    
-    threads = []
-    for idx, plot in enumerate(plots):
-        plot_id = plot["id"]
-        
-        thread = threading.Thread(
-            target=run_simulation_for_plot,
-            args=(plot_id, None, idx * 100, 2),  # interval=2s pour test rapide
-            daemon=True,
-            name=f"Plot-{plot_id}"
-        )
-        thread.start()
-        threads.append(thread)
-        time.sleep(0.5)
-    
-    print(f"\n🟢 {len(threads)} simulateurs actifs (affichage uniquement)")
-    print("💡 Ctrl+C pour arrêter\n")
-    print("=" * 60)
-    
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print("\n\n🛑 Arrêt...")
+'''
 
 
 def run_production():
@@ -211,11 +143,11 @@ def run_production():
         USERNAME = config("ADMIN_NAME")
         PASSWORD = config("ADMIN_PASSWORD")
         
-        # Authentification
+        
         token = HTTPEnabledSensorSimulator.get_jwt_token(USERNAME, PASSWORD)
         http_sim = HTTPEnabledSensorSimulator(BASE_URL, token=token)
         
-        # Charger plots depuis Django
+
         plots = http_sim.fetch_plots()
         print(f"✅ Connecté à Django : {len(plots)} plots trouvés")
         
