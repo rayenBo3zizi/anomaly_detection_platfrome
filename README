@@ -1,0 +1,116 @@
+# Sensor-Based Detection Platform
+
+## Project Description
+
+This project proposes the design and implementation of an **AI-enhanced crop monitoring and anomaly detection platform**, combining modern web technologies, data simulation, and machine learning into a coherent, pedagogically valuable system.
+
+The core idea is to provide a realistic environment where students develop a **robust Django backend** that ingests simulated agricultural sensor data—such as soil moisture, air temperature, and humidity—and exposes it to a **modern React frontend** hosted in a separate repository.
+
+A simple **AI agent** analyzes incoming sensor data in real-time and identifies anomalies related to:
+- Irrigation issues
+- Environmental stress
+- Abnormal patterns
+
+The project exposes students to practices used in **precision agriculture**, such as:
+- Preprocessing sensor data
+- Applying ML models for anomaly detection
+- Generating explainable alerts for monitoring dashboards
+
+Since many real agricultural environments lack continuous sensing infrastructure, the system integrates a **flexible simulation module** producing synthetic but realistic crop conditions, allowing experimentation with different environmental scenarios and anomalies.
+
+---
+
+## Technologies
+
+- **Backend:** Django 6, Django REST Framework, DRF-YASG (Swagger), Simple JWT, PostgreSQL
+- **Frontend:** React 19, Vite, React Router, Material UI, Chart.js
+- **Data & AI:** NumPy, Pandas, Matplotlib, Faker
+- **Others:** Pillow, Python-Decouple, Requests, django-cors-headers
+
+---
+
+## Prerequisites
+
+- Python 3.13+
+- Node.js 20+
+- npm or yarn
+- PostgreSQL (or another database)
+
+---
+
+## Backend Setup (Django REST Framework)
+
+1. Clone the backend repository:
+   ```bash
+   git clone https://github.com/rayenBo3zizi/anomaly_detection_platfrome.git
+   cd backend
+
+2. Install pipenv if not already installed:
+
+pip install pipenv
+
+
+3. Install dependencies and create the virtual environment:
+
+pipenv install
+
+
+4. Activate the pipenv shell:
+
+pipenv shell
+
+
+5. Configure the database in settings.py.
+
+6. Apply migrations:
+
+python manage.py migrate
+
+
+7. Create a superuser:
+
+ python manage.py createsuperuser
+
+
+8. Run the backend server:
+
+python manage.py runserver
+
+
+9. Access the API documentation:
+
+Swagger UI: http://127.0.0.1:8000/swagger/
+
+Redoc UI: http://127.0.0.1:8000/redoc/
+
+
+## Frontend Setup (React)
+
+1. Clone the frontend repository:
+
+git clone https://github.com/rayenBo3zizi/SensorApp.git
+cd frontend
+
+
+2. Install dependencies:
+
+npm install
+# or yarn install
+
+
+3. Configure the API URL in .env:
+
+REACT_APP_API_URL=http://127.0.0.1:8000/api/
+
+
+4. Start the frontend development server:
+
+npm run dev
+# or yarn dev
+
+
+5. Open the frontend at:
+
+http://localhost:5173
+
+

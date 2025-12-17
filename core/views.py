@@ -8,12 +8,48 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 
 class FarmProfileViewSet(viewsets.ModelViewSet):
+    """
+    Management of farm profiles.
+
+list:
+    Returns all farm profiles (admin only).
+
+retrieve:
+    Returns a specific farm profile.
+
+create:
+    Creates a new farm profile.
+
+update:
+    Updates an existing farm profile.
+
+delete:
+    Deletes a farm profile.
+    """
     queryset = FarmProfile.objects.all()
     serializer_class = FarmProfileSerializer
     permission_classes = [IsOwnerOrAdmin]
 
 
 class FieldPlotViewSet(viewsets.ModelViewSet):
+    """
+Management of farm field plots.
+
+list:
+    Returns all field plots visible to the user.
+
+retrieve:
+    Returns a specific field plot.
+
+create:
+    Creates a new field plot.
+
+update:
+    Updates an existing field plot.
+
+delete:
+    Deletes a field plot.
+    """
     serializer_class = FieldPlotSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
     
@@ -37,6 +73,15 @@ class FieldPlotViewSet(viewsets.ModelViewSet):
 
 
 class SensorReadingViewSet(viewsets.ModelViewSet):
+    """
+    Management of sensor readings.
+
+list:
+    Returns all sensor readings.
+
+by_plot:
+    Returns the readings for a specific plot for the current date.
+    """
     queryset = SensorReading.objects.all()
     serializer_class = SensorReadingSerializer
     @action(detail=False, methods=['get'], url_path='plot/(?P<plot_id>[^/.]+)')
@@ -48,11 +93,36 @@ class SensorReadingViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 class AnomalyEventViewSet(viewsets.ModelViewSet):
+    """
+    Management of anomaly events.
+
+    list:
+    Returns all anomaly events.
+
+    retrieve:
+    Returns a specific anomaly event.
+
+    create:
+    Creates a new anomaly event.
+    
+    """
     queryset = AnomalyEvent.objects.all()
     serializer_class = AnomalyEventSerializer
 
 
 class AgentRecommendationViewSet(viewsets.ModelViewSet):
+    """
+    Management of agent recommendations.
+
+    list:
+    Returns all recommendations.
+
+    retrieve:
+    Returns a specific recommendation.
+
+    create:
+    Creates a new recommendation.
+    """
     queryset = AgentRecommendation.objects.all()
     serializer_class = AgentRecommendationSerializer
 

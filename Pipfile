@@ -17,6 +17,7 @@ pipfile = "*"
 python-decouple = "*"
 requests = "*"
 django-cors-headers = "*"
+drf-yasg = "*"
 
 [dev-packages]
 
